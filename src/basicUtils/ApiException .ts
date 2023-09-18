@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { ErrorCodes } from 'src/configs/errorCodes'
-ErrorCodes
-
+/**
+ * 在原有的错误上可以定义一些自己的错误
+ */
 export class ApiException extends HttpException {
   private errorMessage: string
   private errorCode: ErrorCodes

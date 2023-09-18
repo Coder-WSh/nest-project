@@ -1,15 +1,28 @@
-import { IsString } from 'class-validator'
 import {
+  BeforeInsert,
   Column,
   Entity,
   PrimaryGeneratedColumn,
   // ManyToOne,
+  ManyToMany,
+  JoinTable,
   // JoinColumn,
   // OneToMany,
 } from 'typeorm'
+import * as crypto from 'crypto'
+import encry from '../../basicUtils/crypto'
+import { Role } from '../../role/entities/role.entity'
 // 可以和class-validator搭配
+
 @Entity('user')
 export class User {
+  // 使用sava前调用
+  @BeforeInsert()
+  beforeInset() {
+    this.salt = crypto.randomBytes(4).toString('base64')
+    this.password = encry(this.password, this.salt)
+  }
+
   @PrimaryGeneratedColumn('uuid')
   id: number // 标记为主键，值自动生成
 
@@ -28,8 +41,11 @@ export class User {
   @Column({ nullable: true })
   email: string //邮箱
 
-  @Column({ nullable: true })
-  role: string //角色
+  @ManyToMany(() => Role)
+  @JoinTable({
+    name: 'user_role_relation',
+  })
+  roles: Role[] //角色
 
   @Column({ nullable: true })
   salt: string

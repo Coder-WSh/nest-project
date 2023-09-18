@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { cors: true })
   // 注册全局管道监控？
-  app.useGlobalPipes(new ValidationPipe())
+  // app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new HttpExceptionFilter()) // 全局异常过滤器pipe
   app.useGlobalInterceptors(new TransformInterceptor()) //正确拦截
   // 构建swagger

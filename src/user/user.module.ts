@@ -1,12 +1,19 @@
-import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { Module } from '@nestjs/common'
+import { UserService } from './user.service'
+import { UserController } from './user.controller'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from './entities/user.entity'
+import { JwtModule } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config'
+import { Role } from 'src/role/entities/role.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User, Role]),
+    JwtModule.register({ secret: process.env.JWT_SCRENCE }),
+  ],
   controllers: [UserController],
-  providers: [UserService, User],
+  providers: [UserService, ConfigService],
+  exports: [UserService],
 })
 export class UserModule {}

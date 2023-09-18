@@ -1,25 +1,31 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { CreateLoginDto } from './dto/create-login.dto'
 import { UpdateLoginDto } from './dto/update-login.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Login } from './entities/login.entity'
-import { Repository } from 'typeorm'
+import { UserService } from '../user/user.service'
+import { JwtService } from '@nestjs/jwt'
+import ency from '../basicUtils/crypto'
 
 @Injectable()
 export class LoginService {
   constructor(
-    @InjectRepository(Login) private loginRepository: Repository<Login>,
+    private userService: UserService,
+    private jwtService: JwtService,
   ) {}
-  // { account='', password='' }: CreateLoginDto
-  create(infos) {
-    // let a = account + password
-    console.log(infos)
 
-    return 'This action adds a new login'
+  async login(infos: CreateLoginDto) {
+    const { username, password } = infos
+    const user = await this.userService.findUser(username)
+    if (user?.password !== ency(password, user.salt)) {
+      throw new HttpException('密码错误', HttpStatus.UNAUTHORIZED)
+    }
+
+    const payload = { username: user.username, sub: user.id }
+
+    return await this.jwtService.signAsync(payload)
   }
 
-  findAll() {
-    return `This action returns all login`
+  findAll(name) {
+    return name
   }
 
   findOne(id: number) {
